@@ -85,3 +85,25 @@ export function gaugeIconBase64(util: number, size = 32): string {
   });
   return Buffer.from(png).toString("base64");
 }
+
+/**
+ * A static bar-chart glyph (three ascending bars), used as the panel icon. The icon
+ * cannot be live-updated through systray2 on GNOME/appindicator, so it is intentionally
+ * neutral — it never implies a specific usage value. Live numbers live in the menu.
+ */
+export function meterIconBase64(size = 32): string {
+  const blue: RGBA = [74, 158, 255, 255];
+  const bars = [
+    { x0: 4, x1: 10, top: 18 },
+    { x0: 13, x1: 19, top: 12 },
+    { x0: 22, x1: 28, top: 6 },
+  ];
+  const bottom = 26;
+  const png = makePng(size, (x, y) => {
+    for (const b of bars) {
+      if (x >= b.x0 && x < b.x1 && y >= b.top && y <= bottom) return blue;
+    }
+    return [0, 0, 0, 0];
+  });
+  return Buffer.from(png).toString("base64");
+}

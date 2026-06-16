@@ -80,6 +80,10 @@ Claude Code. To let usagemeter refresh the token itself (and write it back), set
   **AppIndicator and KStatusNotifierItem Support** extension (already enabled on Ubuntu).
   systray2 also supports macOS and Windows.
 
+> **Note on the panel icon:** GNOME/AppIndicator renders only a static icon in the top bar
+> and can't live-update it, so usagemeter shows a neutral meter glyph there. The live
+> numbers update in the **dropdown** (click the icon) and in the dashboard.
+
 ## Run
 
 ```bash
