@@ -1,8 +1,8 @@
 # usagemeter
 
-A local menu-bar meter for your **Claude subscription** usage — the same numbers the
-Claude desktop app shows under Settings → Usage, in your system tray and a small
-localhost dashboard.
+A local meter for your **Claude subscription** usage — the same numbers the Claude desktop
+app shows under Settings → Usage, shown live in your **GNOME top bar** (a Shell extension)
+with a dropdown breakdown, plus a small localhost dashboard.
 
 It shows:
 
@@ -25,14 +25,13 @@ Or from a clone (works for private repos too):
     cd usagemeter && ./install.sh
 
 Each user needs **Claude Code installed and logged in** — that's where the token comes from.
-The tray icon uses GNOME's AppIndicator support, which Ubuntu enables by default. If the
-icon doesn't appear:
 
-    sudo apt install -y libayatana-appindicator3-1 gnome-shell-extension-appindicator
-    # then log out / back in
+`install.sh` also installs the GNOME Shell **extension** (the top-bar display) and enables
+it. **Reload GNOME Shell once** so it loads — X11: press Alt+F2, type `r`, Enter; Wayland:
+log out / back in. The autostarted backend feeds it at `localhost:7777`.
 
 Installer env toggles: `USAGEMETER_DIR`, `USAGEMETER_REPO`, `USAGEMETER_NO_AUTOSTART=1`,
-`USAGEMETER_NO_START=1`.
+`USAGEMETER_NO_START=1`, `USAGEMETER_NO_EXTENSION=1`.
 
 ## How it works
 
@@ -76,20 +75,21 @@ Claude Code. To let usagemeter refresh the token itself (and write it back), set
 
 - [Bun](https://bun.sh) (tested on 1.3)
 - A logged-in Claude Code (so `~/.claude/.credentials.json` exists)
-- For the tray: any StatusNotifierItem host. On GNOME that's the
-  **AppIndicator and KStatusNotifierItem Support** extension (already enabled on Ubuntu).
-  systray2 also supports macOS and Windows.
+- GNOME Shell (tested on 46) plus the `gnome-extensions` CLI, for the top-bar extension.
+- *(Optional)* `--tray` shows a systray icon instead — needs a StatusNotifierItem host and
+  also works on macOS/Windows.
 
-> **Note on the panel icon:** GNOME/AppIndicator renders only a static icon in the top bar
-> and can't live-update it, so usagemeter shows a neutral meter glyph there. The live
-> numbers update in the **dropdown** (click the icon) and in the dashboard.
+> **Architecture:** the GNOME top-bar display is a **Shell extension** that polls the
+> backend's local API and renders live text + a dropdown. (AppIndicator can't show live
+> text — that's why the optional `--tray` fallback is icon-only.) The Bun process is the
+> headless backend: it reads the token, polls Anthropic, caches, and serves the dashboard.
 
 ## Run
 
 ```bash
 bun install
-bun start            # tray + dashboard (default)
-bun run dashboard    # dashboard only, no tray
+bun start            # backend: poller + dashboard + local API (feeds the extension)
+bun start --tray     # also show a systray icon (non-GNOME desktops)
 bun run once         # print current usage to the terminal and exit
 ```
 
@@ -101,7 +101,7 @@ Then open the dashboard at **http://localhost:7777**.
 |---|---|---|---|
 | `--port N` | `USAGEMETER_PORT` | `7777` | dashboard port |
 | `--interval N` | `USAGEMETER_INTERVAL` | `120` | poll seconds (min 60) |
-| `--no-tray` | | | disable the tray |
+| `--tray` | | off | also show a systray icon (GNOME uses the extension instead) |
 | `--no-dashboard` | | | disable the web server |
 | `--once` | | | fetch once, print, exit |
 | `--open` | | | open the dashboard in your browser on start |
@@ -121,8 +121,8 @@ systray2 helper from `node_modules/systray2/traybin`, so for the tray either run
 
 ### Start on login (GNOME)
 
-Run `./install-autostart.sh` to launch usagemeter with your GNOME session (tray +
-dashboard). It writes `~/.config/autostart/usagemeter.desktop` pointing at this checkout.
+Run `./install-autostart.sh` to start the backend with your GNOME session. It writes
+`~/.config/autostart/usagemeter.desktop` pointing at this checkout.
 Logs go to `~/.cache/usagemeter/usagemeter.log`.
 
 - Run manually: `bun start` (foreground), or `./usagemeter.sh &` to background with logging.
@@ -131,8 +131,9 @@ Logs go to `~/.cache/usagemeter/usagemeter.log`.
 
 ## Troubleshooting
 
-- **Tray icon not visible** — you need a tray/appindicator host. On GNOME enable the
-  *AppIndicator* extension and log out/in.
+- **Top-bar item not showing** — reload GNOME Shell (X11: Alt+F2 → `r` → Enter; Wayland:
+  re-login), then `gnome-extensions enable usagemeter@tvinz.github.io`. If it shows
+  "backend not running", start it (`usagemeter.sh`); check `gnome-extensions info …`.
 - **`429 rate limited`** — raise the interval: `bun start --interval 300`.
 - **Auth error / can't read credentials** — run any `claude` command to (re)log in;
   usagemeter reuses Claude Code's token.

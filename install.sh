@@ -70,6 +70,17 @@ else
   ( cd "$INSTALL_DIR" && bash install-autostart.sh )
 fi
 
+# --- GNOME Shell extension (top-bar UI) --------------------------------------
+if [ "${USAGEMETER_NO_EXTENSION:-0}" = "1" ]; then
+  info "Skipping GNOME extension (USAGEMETER_NO_EXTENSION=1)"
+elif command -v gnome-extensions >/dev/null 2>&1; then
+  info "Installing GNOME Shell extension (live panel display)…"
+  ( cd "$INSTALL_DIR" && bash install-extension.sh ) || warn "extension install failed (non-fatal)"
+  warn "Reload GNOME Shell to show the panel item — X11: Alt+F2, 'r', Enter; Wayland: re-login."
+else
+  info "No gnome-extensions CLI — skipping panel extension (use --tray for a systray icon)."
+fi
+
 # --- Launch -------------------------------------------------------------------
 if [ "${USAGEMETER_NO_START:-0}" = "1" ]; then
   info "Not starting now (USAGEMETER_NO_START=1). Start with: $INSTALL_DIR/usagemeter.sh"

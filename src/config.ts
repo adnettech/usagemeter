@@ -71,7 +71,9 @@ export function parseArgs(argv: string[]): Args {
   };
   return {
     once: has("--once"),
-    tray: !has("--no-tray"),
+    // Tray is opt-in: on GNOME the Shell extension is the panel UI. Use --tray for the
+    // systray2 icon (e.g. on non-GNOME desktops).
+    tray: has("--tray"),
     dashboard: !has("--no-dashboard"),
     open: has("--open"),
     port: num("--port"),
