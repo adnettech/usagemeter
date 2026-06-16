@@ -1,0 +1,6 @@
+node_modules/
+/usagemeter
+*.log
+
+# personal screenshot used only as a design reference — not part of the project
+/2026-06-16_08-41-18.png

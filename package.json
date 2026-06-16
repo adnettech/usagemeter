@@ -1,0 +1,22 @@
+{
+  "name": "usagemeter",
+  "version": "0.1.0",
+  "description": "Local menu-bar meter for your Claude subscription usage (session + weekly limits), built on Bun.",
+  "type": "module",
+  "module": "src/index.ts",
+  "bin": {
+    "usagemeter": "src/index.ts"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dashboard": "bun run src/index.ts --no-tray",
+    "once": "bun run src/index.ts --once",
+    "compile": "bun build --compile --outfile usagemeter src/index.ts"
+  },
+  "dependencies": {
+    "systray2": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
