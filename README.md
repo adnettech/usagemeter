@@ -131,9 +131,14 @@ Logs go to `~/.cache/usagemeter/usagemeter.log`.
 
 ## Troubleshooting
 
-- **Top-bar item not showing** — reload GNOME Shell (X11: Alt+F2 → `r` → Enter; Wayland:
-  re-login), then `gnome-extensions enable usagemeter@tvinz.github.io`. If it shows
-  "backend not running", start it (`usagemeter.sh`); check `gnome-extensions info …`.
+- **Top-bar item not showing** — the extension loads on a fresh login (or a Shell reload).
+  If `gnome-extensions info usagemeter@tvinz.github.io` shows `Enabled: No / INITIALIZED`,
+  user extensions are globally off — fix with `gsettings set org.gnome.shell
+  disable-user-extensions false` then `gnome-extensions enable usagemeter@tvinz.github.io`
+  (the installer now does this automatically). If it shows "backend not running", start it
+  with `usagemeter.sh`.
+- **Don't `gnome-shell --replace` on a virtualized/remote display** — it can crash the
+  session. Just log out/in to load the extension.
 - **`429 rate limited`** — raise the interval: `bun start --interval 300`.
 - **Auth error / can't read credentials** — run any `claude` command to (re)log in;
   usagemeter reuses Claude Code's token.

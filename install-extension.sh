@@ -13,6 +13,13 @@ rm -rf "$DEST"
 cp -r "$SRC" "$DEST"
 [ -d "$DEST/schemas" ] && command -v glib-compile-schemas >/dev/null && glib-compile-schemas "$DEST/schemas" || true
 
+# User extensions must be allowed globally, or nothing in ~/.local/share loads.
+if command -v gsettings >/dev/null 2>&1 \
+   && [ "$(gsettings get org.gnome.shell disable-user-extensions 2>/dev/null)" = "true" ]; then
+  gsettings set org.gnome.shell disable-user-extensions false \
+    && echo "Enabled user extensions globally (org.gnome.shell disable-user-extensions was true)."
+fi
+
 if command -v gnome-extensions >/dev/null 2>&1; then
   gnome-extensions enable "$UUID" 2>/dev/null || true
 fi
