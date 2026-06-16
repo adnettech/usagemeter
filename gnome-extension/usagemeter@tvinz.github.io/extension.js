@@ -36,6 +36,24 @@ function ago(ms) {
     return `${Math.floor(m / 60)} hr ago`;
 }
 
+function relReset(iso) {
+    const ms = new Date(iso).getTime() - Date.now();
+    if (!(ms > 0)) return 'now';
+    const min = Math.floor(ms / 60000);
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return h > 0 ? `${h} hr ${m} min` : `${m} min`;
+}
+
+function absReset(iso) {
+    return new Date(iso).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+}
+
+function resetText(w) {
+    if (!w || !w.resetsAt) return '';
+    return w.reltime ? `Resets in ${relReset(w.resetsAt)}` : `Resets ${absReset(w.resetsAt)}`;
+}
+
 const UsageIndicator = GObject.registerClass(
 class UsageIndicator extends PanelMenu.Button {
     _init() {
@@ -60,8 +78,10 @@ class UsageIndicator extends PanelMenu.Button {
         this._http = new Soup.Session();
         this._http.timeout = 8;
 
+        // Refresh from the backend's cache on open (no forced Anthropic call — the
+        // reset countdown is computed client-side from resetsAt, so it stays accurate).
         this.menu.connect('open-state-changed', (_m, isOpen) => {
-            if (isOpen) this._refresh(true);
+            if (isOpen) this._refresh(false);
         });
 
         this._refresh(false);
@@ -84,20 +104,25 @@ class UsageIndicator extends PanelMenu.Button {
         const barLbl = new St.Label({ text: barText(0) });
         barLbl.set_style('font-family: monospace;');
 
+        const resetLbl = new St.Label({ text: '' });
+        resetLbl.set_style('color: #9aa0a6; padding-top: 2px;');
+
         box.add_child(head);
         box.add_child(barLbl);
+        box.add_child(resetLbl);
         item.add_child(box);
         this.menu.addMenuItem(item);
-        return { pctLbl, barLbl };
+        return { pctLbl, barLbl, resetLbl };
     }
 
-    _setRow(key, util) {
+    _setRow(key, w) {
         const row = this._rows[key];
         if (!row) return;
-        const u = Math.round(util);
+        const u = Math.round(w ? w.utilization : 0);
         row.pctLbl.text = `${u}%`;
         row.barLbl.text = barText(u);
         row.barLbl.set_style(`font-family: monospace; color: ${colorFor(u)};`);
+        row.resetLbl.text = resetText(w);
     }
 
     _refresh(force) {
@@ -125,7 +150,7 @@ class UsageIndicator extends PanelMenu.Button {
         this._label.set_style(`color: ${colorFor(Math.max(s, wk))};`);
 
         for (const key of ['five_hour', 'seven_day', 'seven_day_sonnet'])
-            this._setRow(key, byKey[key] ? byKey[key].utilization : 0);
+            this._setRow(key, byKey[key]);
 
         this._updated.label.text = `Updated ${ago(d.fetchedAt)}${d.stale ? ' (stale)' : ''}`;
     }
@@ -133,6 +158,13 @@ class UsageIndicator extends PanelMenu.Button {
     _renderOffline() {
         this._label.text = '—';
         this._label.set_style('color: #f5a623;');
+        for (const key of ['five_hour', 'seven_day', 'seven_day_sonnet']) {
+            const row = this._rows[key];
+            if (row) {
+                row.pctLbl.text = '—';
+                row.resetLbl.text = '';
+            }
+        }
         this._updated.label.text = 'usagemeter backend not running';
     }
 
