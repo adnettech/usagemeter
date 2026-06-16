@@ -12,6 +12,28 @@ It shows:
 - **Last updated** — when the numbers were last fetched
 - *(bonus)* extra-usage credit pool, and any other limit buckets your plan exposes
 
+## Install (Ubuntu)
+
+One line — installs Bun if needed, clones to `~/.local/share/usagemeter`, sets up GNOME
+autostart, and launches it (the repo must be **public** for this to work without auth):
+
+    curl -fsSL https://raw.githubusercontent.com/tvinz/usagemeter/main/install.sh | bash
+
+Or from a clone (works for private repos too):
+
+    git clone https://github.com/tvinz/usagemeter.git
+    cd usagemeter && ./install.sh
+
+Each user needs **Claude Code installed and logged in** — that's where the token comes from.
+The tray icon uses GNOME's AppIndicator support, which Ubuntu enables by default. If the
+icon doesn't appear:
+
+    sudo apt install -y libayatana-appindicator3-1 gnome-shell-extension-appindicator
+    # then log out / back in
+
+Installer env toggles: `USAGEMETER_DIR`, `USAGEMETER_REPO`, `USAGEMETER_NO_AUTOSTART=1`,
+`USAGEMETER_NO_START=1`.
+
 ## How it works
 
 Claude Code stores your subscription's OAuth token in `~/.claude/.credentials.json`.
