@@ -59,8 +59,19 @@ class UsageIndicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, 'usagemeter');
 
-        this._label = new St.Label({ text: '…', y_align: Clutter.ActorAlign.CENTER });
-        this.add_child(this._label);
+        // Panel: "5h <s%> · 7d <w%>" — dimmed window labels, each % colored by its own severity.
+        const DIM = 'color: #9aa0a6;';
+        this._panelBox = new St.BoxLayout({ y_align: Clutter.ActorAlign.CENTER });
+        const lbl5 = new St.Label({ text: '5h ', y_align: Clutter.ActorAlign.CENTER });
+        lbl5.set_style(DIM);
+        this._sPct = new St.Label({ text: '…', y_align: Clutter.ActorAlign.CENTER });
+        const sep = new St.Label({ text: '  ·  ', y_align: Clutter.ActorAlign.CENTER });
+        sep.set_style(DIM);
+        const lbl7 = new St.Label({ text: '7d ', y_align: Clutter.ActorAlign.CENTER });
+        lbl7.set_style(DIM);
+        this._wPct = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER });
+        [lbl5, this._sPct, sep, lbl7, this._wPct].forEach((c) => this._panelBox.add_child(c));
+        this.add_child(this._panelBox);
 
         this._rows = {};
         this._rows.five_hour = this._addRow('Current session');
@@ -146,8 +157,10 @@ class UsageIndicator extends PanelMenu.Button {
         const s = byKey.five_hour ? Math.round(byKey.five_hour.utilization) : 0;
         const wk = byKey.seven_day ? Math.round(byKey.seven_day.utilization) : 0;
 
-        this._label.text = `${s}% · ${wk}%`;
-        this._label.set_style(`color: ${colorFor(Math.max(s, wk))};`);
+        this._sPct.text = `${s}%`;
+        this._sPct.set_style(`color: ${colorFor(s)};`);
+        this._wPct.text = `${wk}%`;
+        this._wPct.set_style(`color: ${colorFor(wk)};`);
 
         for (const key of ['five_hour', 'seven_day', 'seven_day_sonnet'])
             this._setRow(key, byKey[key]);
@@ -156,8 +169,10 @@ class UsageIndicator extends PanelMenu.Button {
     }
 
     _renderOffline() {
-        this._label.text = '—';
-        this._label.set_style('color: #f5a623;');
+        this._sPct.text = '—';
+        this._sPct.set_style('color: #f5a623;');
+        this._wPct.text = '—';
+        this._wPct.set_style('color: #f5a623;');
         for (const key of ['five_hour', 'seven_day', 'seven_day_sonnet']) {
             const row = this._rows[key];
             if (row) {
