@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # usagemeter installer for Ubuntu / GNOME.
 #
-#   curl -fsSL https://raw.githubusercontent.com/tvinz/usagemeter/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/adnettech/usagemeter/main/install.sh | bash
 #
 # or from a clone:  ./install.sh
 #
 # Env: USAGEMETER_DIR, USAGEMETER_REPO, USAGEMETER_NO_AUTOSTART=1, USAGEMETER_NO_START=1
 set -euo pipefail
 
-REPO_URL="${USAGEMETER_REPO:-https://github.com/tvinz/usagemeter.git}"
+REPO_URL="${USAGEMETER_REPO:-https://github.com/adnettech/usagemeter.git}"
 INSTALL_DIR="${USAGEMETER_DIR:-$HOME/.local/share/usagemeter}"
 
 info() { printf '\033[1;34m==>\033[0m %s\n'   "$*"; }

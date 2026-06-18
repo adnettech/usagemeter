@@ -17,11 +17,11 @@ It shows:
 One line — installs Bun if needed, clones to `~/.local/share/usagemeter`, sets up GNOME
 autostart, and launches it (the repo must be **public** for this to work without auth):
 
-    curl -fsSL https://raw.githubusercontent.com/tvinz/usagemeter/main/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/adnettech/usagemeter/main/install.sh | bash
 
 Or from a clone (works for private repos too):
 
-    git clone https://github.com/tvinz/usagemeter.git
+    git clone https://github.com/adnettech/usagemeter.git
     cd usagemeter && ./install.sh
 
 Each user needs **Claude Code installed and logged in** — that's where the token comes from.

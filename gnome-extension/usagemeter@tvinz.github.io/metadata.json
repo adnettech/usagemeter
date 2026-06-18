@@ -3,6 +3,6 @@
   "name": "usagemeter",
   "description": "Shows your Claude subscription usage (session + weekly limits) in the GNOME top bar, with a dropdown breakdown. Reads from the local usagemeter backend at http://localhost:7777.",
   "shell-version": ["45", "46", "47"],
-  "url": "https://github.com/tvinz/usagemeter",
+  "url": "https://github.com/adnettech/usagemeter",
   "version": 1
 }
