@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Build (bundles & resolves all imports)
+        run: bun build src/index.ts --target bun --outfile /tmp/usagemeter.build.js
+      - name: Shell script syntax
+        run: bash -n install.sh install-autostart.sh install-extension.sh usagemeter.sh
+      - name: GNOME extension syntax
+        run: node --check "gnome-extension/usagemeter@tvinz.github.io/extension.js"
