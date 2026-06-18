@@ -1,0 +1,4 @@
+# Default owners — auto-requested for review on every PR.
+# When a second maintainer joins, also enable "Require review from Code Owners"
+# and set required approving reviews to 1 (Settings → Branches → main).
+* @tvinz
