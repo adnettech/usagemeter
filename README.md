@@ -150,6 +150,12 @@ Logs go to `~/.cache/usagemeter/usagemeter.log`.
 The desktop app's "Daily included routine runs" line is **not** returned by
 `/api/oauth/usage`, so it is intentionally omitted rather than faked.
 
+## Contributing
+
+Work off a branch and open a PR — `main` is protected, CI must pass, and merges are
+squash-only (this applies to maintainers too). See [CONTRIBUTING.md](CONTRIBUTING.md) for
+the full workflow and dev setup.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
